@@ -28,6 +28,24 @@ export const StyledTooltipModalBackdrop = styled.div.attrs({
   font-family: ${props => props.theme.fonts.system};
   direction: ${props => props.theme.rtl && 'rtl'};
 
+  &.garden-tooltip-modal-transition-enter div {
+    opacity: 0;
+  }
+
+  &.garden-tooltip-modal-transition-enter-active div {
+    transition: opacity 200ms;
+    opacity: 1;
+  }
+
+  &.garden-tooltip-modal-transition-exit div {
+    opacity: 1;
+  }
+
+  &.garden-tooltip-modal-transition-exit-active div {
+    transition: opacity 200ms;
+    opacity: 0;
+  }
+
   ${props => retrieveComponentStyles(COMPONENT_ID, props)};
 `;
 
