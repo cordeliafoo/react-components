@@ -19,6 +19,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { ThemeContext } from 'styled-components';
 import { usePopper, Modifier } from 'react-popper';
+import { CSSTransition } from 'react-transition-group';
 import { useModal } from '@zendeskgarden/container-modal';
 import { useCombinedRefs } from '@zendeskgarden/container-utilities';
 import {
@@ -94,6 +95,7 @@ export interface ITooltipModalProps extends HTMLAttributes<HTMLDivElement> {
    * Sets the root ID. A unique ID is created if none is provided.
    */
   id?: string;
+  onTransitionEnd?: any;
 }
 
 /**
@@ -114,6 +116,7 @@ export const TooltipModal = React.forwardRef<HTMLDivElement, ITooltipModalProps>
       focusOnMount,
       restoreFocus,
       id,
+      onTransitionEnd,
       ...props
     },
     ref
@@ -172,6 +175,37 @@ export const TooltipModal = React.forwardRef<HTMLDivElement, ITooltipModalProps>
       style,
       ...props
     }) as any;
+
+    if (isAnimated) {
+      return (
+        <CSSTransition
+          timeout={200}
+          unmountOnExit
+          in={Boolean(referenceElement)}
+          classNames="garden-tooltip-modal-transition"
+          onExited={isAnimated ? onTransitionEnd : undefined}
+        >
+          {transitionState => {
+            return (
+              <TooltipModalContext.Provider value={value}>
+                <StyledTooltipModalBackdrop {...(getBackdropProps(backdropProps) as any)}>
+                  <StyledTooltipWrapper
+                    ref={setPopperElement}
+                    style={styles.popper}
+                    placement={state ? state.placement : undefined}
+                    zIndex={zIndex}
+                    isAnimated={isAnimated}
+                    {...attributes.popper}
+                  >
+                    <StyledTooltipModal transitionState={transitionState} {...modalProps} />
+                  </StyledTooltipWrapper>
+                </StyledTooltipModalBackdrop>
+              </TooltipModalContext.Provider>
+            );
+          }}
+        </CSSTransition>
+      );
+    }
 
     return referenceElement ? (
       <TooltipModalContext.Provider value={value}>

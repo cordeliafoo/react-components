@@ -34,23 +34,23 @@ export const Default: Story = ({
   backdropProps
 }) => {
   const [step, setStep] = React.useState<any>();
-  const step1Ref = React.useRef(null);
-  const step2Ref = React.useRef(null);
-  const step3Ref = React.useRef(null);
-  const step4Ref = React.useRef(null);
+  const step1Ref = React.useRef<HTMLButtonElement>(null);
+  const step2Ref = React.useRef<HTMLButtonElement>(null);
+  const step3Ref = React.useRef<HTMLButtonElement>(null);
+  const step4Ref = React.useRef<HTMLButtonElement>(null);
 
-  const referenceElement = React.useMemo(() => {
+  const [referenceElement, setReferenceElement] = React.useState<HTMLButtonElement | null>(null);
+
+  React.useEffect(() => {
     if (step === 1) {
-      return step1Ref.current;
+      setReferenceElement(step1Ref.current);
     } else if (step === 2) {
-      return step2Ref.current;
+      setReferenceElement(step2Ref.current);
     } else if (step === 3) {
-      return step3Ref.current;
+      setReferenceElement(step3Ref.current);
     } else if (step === 4) {
-      return step4Ref.current;
+      setReferenceElement(step4Ref.current);
     }
-
-    return undefined;
   }, [step]);
 
   const placement = React.useMemo(() => {
@@ -99,8 +99,11 @@ export const Default: Story = ({
         restoreFocus={restoreFocus}
         focusOnMount={focusOnMount}
         backdropProps={backdropProps}
-        onClose={() => setStep(undefined)}
+        onClose={() => setReferenceElement(null)}
         referenceElement={referenceElement}
+        onTransitionEnd={() => {
+          setStep(undefined);
+        }}
       >
         <TooltipModal.Title>Title for step {step}</TooltipModal.Title>
         <TooltipModal.Body>
@@ -125,6 +128,7 @@ export const Default: Story = ({
               isPrimary
               onClick={() => {
                 if (step === 4) {
+                  setReferenceElement(null);
                   setStep(undefined);
                 } else {
                   setStep(step + 1);
